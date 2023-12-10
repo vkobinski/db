@@ -1,8 +1,12 @@
 #include <stdio.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #define MAXIMO 50
+
+void print_db() { printf("db > "); }
 
 typedef struct {
   int id;
@@ -10,20 +14,43 @@ typedef struct {
   char email[MAXIMO];
 } Row;
 
+
 Row *create_row() {
   Row *row = malloc(sizeof(Row));
   return row;
 }
 
-void print_db() { printf("db > "); }
-
 Row *rows[50];
+
+void salvar_arquivo() {
+
+    int file = open("db", O_RDWR, O_CREAT, S_IWUSR, S_IRUSR);
+    lseek(file, 0, SEEK_SET);
+
+    write(file, rows[0], sizeof(Row));
+
+    exit(EXIT_SUCCESS);
+}
+
+void ler_arquivo() {
+
+    int file = open("db", O_RDWR, O_CREAT, S_IWUSR, S_IRUSR);
+    lseek(file, 0, SEEK_SET);
+
+    Row* row = create_row();
+    read(file, row, sizeof(Row));
+
+    rows[0] = row;
+
+}
 
 int main() {
 
   char *linha = NULL;
   size_t *tamanho = malloc(sizeof(size_t));
   int quantidade_linhas = 0;
+
+  ler_arquivo();
 
   while (1) {
 
@@ -54,10 +81,14 @@ int main() {
     if (strcmp(linha, "select\n") == 0) {
       printf("Dados da tabela:\n");
 
-      for (int i = 0; i < quantidade_linhas; i++) {
+      for (int i = 0; i < 50; i++) {
         Row *row = rows[i];
         printf("%s %s\n", row->nome, row->email);
       }
+    }
+
+    if(strcmp(linha, ".exit\n") == 0) {
+        salvar_arquivo();
     }
   }
 

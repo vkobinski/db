@@ -25,13 +25,11 @@ describe 'database' do
 
   it 'inserts and retrieves a row' do
     result = run_script([
-                          'CREATE TABLE pessoa (nome: text, email: text)',
                           'insert (user1,person1@example.com)',
                           'select',
                           '.exit'
                         ])
     expect(result).to match_array([
-                                    'db > Executed.',
                                     'db > Executed.',
                                     'db > (1, user1, person1@example.com)',
                                     'db > '
